@@ -1,7 +1,14 @@
+import os
+
+from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langgraph.graph import MessagesState
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
+
+base_url = os.getenv("LMSTUDIO_BASE_URL", "http://localhost:1234/v1")
+model_name = os.getenv("LMSTUDIO_MODEL", "qwen3-32b")
+api_key = os.getenv("LMSTUDIO_API_KEY", "lm-studio")
 
 # Tool
 def multiply(a: int, b: int) -> int:
@@ -14,7 +21,12 @@ def multiply(a: int, b: int) -> int:
     return a * b
 
 # LLM with bound tool
-llm = ChatOpenAI(model="gpt-4o")
+llm = ChatOpenAI(
+    base_url=base_url,
+    api_key=api_key,
+    model=model_name,
+    temperature=0.7
+)
 llm_with_tools = llm.bind_tools([multiply])
 
 # Node
